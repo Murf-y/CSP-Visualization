@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="main.js" type="module" defer></script>
+    <script src="graph.js" type="module" defer></script>
+    <title>CSP Visualization</title>
+  </head>
+  <body>
+    <h1 style="position: absolute; top: 5%">CSP Visualization</h1>
+    <div class="flex-horizontal">
+      <div class="grid">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+      </div>
+      <div class="flex-vertical">
+        <div style="display: flex; flex-direction: column; gap: 0px">
+          <h3>Algorithm</h3>
+          <select
+            id="algorithm"
+            name="algorithm"
+            onchange="algorithmChange()"
+            class="select-box"
+          >
+            <option value="naive">Naive Search</option>
+            <option value="backtracking">Backtracking</option>
+            <option value="iterative">Iterative Improvement</option>
+          </select>
+        </div>
+        <!-- ordering: None, MRV, MRV with LCV, MRV with Degree heuristic -->
+        <div style="display: flex; flex-direction: column; gap: 0px">
+          <h3>Ordering</h3>
+          <select
+            id="ordering"
+            name="ordering"
+            onchange="orderingChange()"
+            class="select-box"
+          >
+            <option value="none">None</option>
+            <option value="mrv">MRV</option>
+            <option value="mrv_lcv">MRV with LCV</option>
+            <option value="mrv_degree">MRV with Degree heuristic</option>
+          </select>
+        </div>
+        <!-- Filtering: None, Forward Checking, Arc consistency -->
+        <div style="display: flex; flex-direction: column; gap: 0px">
+          <h3>Filtering</h3>
+          <select
+            id="filtering"
+            name="filtering"
+            onchange="filteringChange()"
+            class="select-box"
+          >
+            <option value="none">None</option>
+            <option value="forward_checking">Forward Checking</option>
+            <option value="arc_consistency">Arc Consistency</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
