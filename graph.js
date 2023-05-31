@@ -100,6 +100,10 @@ class Graph {
 
     return true;
   }
+
+  getNodes() {
+    return this.nodes;
+  }
 }
 
 export { Graph, Node };

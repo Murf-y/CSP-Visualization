@@ -7,21 +7,33 @@ const ColorEnum = {
   NONE: "white",
 };
 const constraints = [
+  // add random edges between 4*4 grid (0, 1, 2, 3)
   [0, 1],
+  [0, 6],
+  [0, 4],
+  [1, 7],
   [1, 2],
-  [1, 4],
-  [2, 5],
-  [3, 4],
-  [3, 6],
-  [3, 1],
+  [2, 3],
   [4, 5],
-  [4, 7],
-  [4, 2],
-  [5, 8],
-  [6, 7],
-  [6, 4],
+  [4, 6],
+  [7, 11],
   [7, 8],
-  [7, 5],
+  [8, 9],
+  [9, 10],
+  [10, 11],
+  [5, 9],
+  [5, 6],
+  [6, 10],
+  [2, 6],
+  [13, 14],
+  [13, 9],
+  [12, 13],
+  [15, 14],
+  [15, 11],
+  [12, 8],
+  [7, 3],
+  [8, 13],
+  [6, 3],
 ];
 
 // get all the circles
@@ -60,33 +72,20 @@ for (let i = 0; i < constraints.length; i++) {
   graph.addEdge(constraints[i][0], constraints[i][1]);
   drawLine(circles[constraints[i][0]], circles[constraints[i][1]], "gray", "2");
 }
-
-function naiveSearchWithDelay(graph, delay) {
+function* naiveSearchGenerator(graph, delay) {
   const stack = [];
   stack.push(graph.getNode(0)); // Start with the first node
 
-  function delayColorChange(node, color) {
-    setTimeout(() => {
-      node.changeColor(color);
-    }, delay);
-  }
-
-  function delayBacktrack(node) {
-    setTimeout(() => {
-      node.changeColor(ColorEnum.NONE);
-      stack.pop();
-      search();
-    }, delay);
-  }
-
-  function search() {
-    if (stack.length === 0) {
-      console.log("Graph cannot be colored with the given constraints.");
-      return;
-    }
-
+  while (stack.length > 0) {
     const currentNode = stack[stack.length - 1];
 
+    if (currentNode.color !== ColorEnum.NONE) {
+      stack.pop();
+      yield;
+      continue;
+    }
+
+    console.log(currentNode, stack);
     if (graph.isSatisfied()) {
       console.log("Graph successfully colored!");
       return;
@@ -96,28 +95,43 @@ function naiveSearchWithDelay(graph, delay) {
 
     if (validColors.length === 0) {
       // Backtrack
-      delayBacktrack(currentNode);
-      return;
+      const previousNode = stack.pop();
+      previousNode.changeColor(ColorEnum.NONE);
+      yield;
+      continue;
     }
 
     const nextColor = validColors.shift();
-    delayColorChange(currentNode, nextColor);
+    currentNode.changeColor(nextColor);
+    yield;
 
-    // Add neighbors to the stack in reverse order to prioritize coloring them later
     const neighbors = graph.getNeighbors(currentNode.index);
-    for (let i = neighbors.length - 1; i >= 0; i--) {
+    for (let i = 0; i < neighbors.length; i++) {
       const neighbor = neighbors[i];
       if (neighbor.color === ColorEnum.NONE) {
         stack.push(neighbor);
       }
     }
 
-    setTimeout(search, delay);
+    yield;
   }
 
-  search();
+  console.log("Graph cannot be colored with the given constraints.");
 }
 
-naiveSearchWithDelay(graph, 600);
+function naiveSearchWithDelay(graph, delay) {
+  const generator = naiveSearchGenerator(graph, delay);
+
+  function iterate() {
+    const { done } = generator.next();
+    if (!done) {
+      setTimeout(iterate, delay);
+    }
+  }
+
+  iterate();
+}
+
+naiveSearchWithDelay(graph, 100);
 
 export { ColorEnum };
